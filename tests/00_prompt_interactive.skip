@@ -1,0 +1,8 @@
+# This test is skipped in non-interactive mode
+# Test: Prompt displays in interactive mode
+# 
+# When the shell is run interactively (with a TTY), it should display
+# a prompt and wait for user input.
+#
+# This test is skipped because it requires interactive terminal input
+# which cannot be easily automated.
