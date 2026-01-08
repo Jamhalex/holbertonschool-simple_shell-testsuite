@@ -1,15 +1,20 @@
 # Simple Shell Test Suite
 
-A small and practical test suite for the **Holberton simple_shell project**.
+A practical and deterministic test suite for the **Holberton `simple_shell` project**.
 
-This repository helps you automatically test your `hsh` binary by comparing its behavior against `/bin/sh`.
+This repository allows you to automatically test your `hsh` binary by validating its behavior against `/bin/sh` **when applicable**, and through explicit assertions for project-specific features.
 
-It checks:
-- exit status
-- stdout
-- stderr (normalized to avoid false failures)
+---
 
-If your shell behaves like `/bin/sh`, the test passes.
+## What this test suite checks
+
+- Exit status
+- Standard output (stdout)
+- Standard error (stderr), normalized to avoid false failures
+- Environment handling
+- Builtins behavior
+
+If your shell behaves correctly, the tests pass.
 
 ---
 
@@ -22,7 +27,7 @@ If your shell behaves like `/bin/sh`, the test passes.
 
 ---
 
-## How to run the tests (Quick Start)
+## Quick Start
 
 From the root of this repository:
 
@@ -33,8 +38,8 @@ Example:
 bash
 Copy code
 HSH=/home/user/holbertonschool-simple_shell/hsh ./checker.bash
-Optional options
-Run with verbose output (prints stdout/stderr even on PASS):
+Optional flags
+Verbose output (print stdout/stderr even on PASS):
 
 bash
 Copy code
@@ -44,49 +49,46 @@ Use a different reference shell (default is /bin/sh):
 bash
 Copy code
 REF=/bin/sh HSH=/path/to/hsh ./checker.bash
-How this test suite works
+How the test suite works
 Each test lives in the tests/ directory.
 
 For every test:
 
-The same input is sent to /bin/sh and to your hsh.
+The same input is sent to /bin/sh and to hsh
 
-Exit status, stdout, and stderr are compared.
+Exit status, stdout, and stderr are compared
 
 Harmless differences are ignored:
 
-stderr program name differences
+executable name differences in stderr
 
-environment order differences
+environment variable ordering
 
-A final summary is printed.
+A summary is printed at the end.
 
-Test files (.t format)
-Each test is a plain text file with key=value pairs.
+Test file format (.t files)
+Each test is a plain text file using key=value pairs.
 
 Supported keys
 Key	Description
 name	Human-readable test name
-notes	Extra explanation printed during the run
-input	Commands sent to stdin (\n = newline)
-env	Environment for the test
-expect_status	Expected exit code
+notes	Optional explanation
+input	Commands sent to stdin (\\n = newline)
+env	Environment configuration
+expect_status	Expected exit status
 expect_stdout	Expected stdout (optional)
 expect_stderr	Expected stderr (optional)
 sort_stdout	Set to 1 if output order doesn’t matter
 
-Environment (env)
+Environment handling (env)
 default → inherit current environment
 
 KEY=VAL;KEY2=VAL2 → run with env -i and only these variables
 
-Example test
-Create a new test file:
+Startup noise is eliminated using ENV=/dev/null.
 
-bash
-Copy code
-tests/11_pwd_builtin.t
-Content:
+Example test
+File: tests/11_pwd_builtin.t
 
 ini
 Copy code
@@ -101,7 +103,7 @@ Sends pwd to both shells
 
 Expects exit code 0
 
-Compares output with /bin/sh
+Compares output against /bin/sh
 
 Order-independent output (env example)
 Some commands (like env) do not guarantee output order.
@@ -113,11 +115,11 @@ Copy code
 sort_stdout=1
 The test suite will:
 
-sort output before comparing
+Sort output before comparing
 
-ignore the _= variable (which differs between shells)
+Ignore the _= variable (which differs between shells)
 
-Skipping a test
+Skipping tests
 To temporarily disable a test, rename it with .skip:
 
 bash
@@ -126,7 +128,7 @@ mv tests/00_prompt_interactive.t tests/00_prompt_interactive.skip
 Skipped tests are reported but not executed.
 
 Project structure
-bash
+text
 Copy code
 .
 ├── checker.bash        # Main test runner
@@ -145,18 +147,22 @@ Exit status
 
 Useful for CI and automation.
 
-Purpose
-This test suite is meant to:
+Important note on non-POSIX builtins
+⚠️ Important: Tests for setenv and unsetenv do not compare against /bin/sh.
+/bin/sh does not implement these builtins, and doing a reference diff would yield incorrect failures.
+These tests therefore use explicit assertions on expected behavior.
 
-catch real bugs in your shell
+TL;DR
+This test suite provides deterministic and fair validation for the Simple Shell project.
 
-avoid false negatives
+POSIX behavior is compared against /bin/sh
 
-be easy to extend and understand
+Project-specific builtins (setenv, unsetenv) use explicit assertions
 
+STDERR is sanitized to avoid shell-name false negatives
 
-> ⚠️ **Important:** Tests for `setenv` and `unsetenv` do **not** compare against `/bin/sh`.  
-> `/bin/sh` does not implement these builtins, and doing a reference diff would yield **incorrect failures**.  
-> These tests therefore use **explicit assertions** on expected output.
+Environment noise is eliminated
 
-Designed for Holberton peer review and cohort usage.
+env output is sorted when order is undefined
+
+Designed for Holberton peer review and cohort-wide usage.
