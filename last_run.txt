@@ -1,0 +1,60 @@
+Simple Shell Test Suite
+────────────────────────────────────────────────────────
+HSH: /home/rootera/Holberton/holbertonschool-simple_shell/hsh
+REF: /bin/sh
+
+SKIP  00_prompt_interactive.skip (marked .skip)
+RUN   01_non_interactive_ls.t — Non-interactive /bin/ls
+PASS  01_non_interactive_ls.t
+
+RUN   02_absolute_path_exec.t — Absolute path command runs
+PASS  02_absolute_path_exec.t
+
+RUN   03_cmd_not_found_127.t — Command not found returns 127
+PASS  03_cmd_not_found_127.t
+
+RUN   04_path_empty_127.t — Empty PATH -> ls not found -> 127
+PASS  04_path_empty_127.t
+
+RUN   05_path_minimal_ok.t — Minimal PATH resolves ls
+PASS  05_path_minimal_ok.t
+
+RUN   06_exit_no_arg_uses_last_status.t — exit uses last command status
+PASS  06_exit_no_arg_uses_last_status.t
+
+RUN   07_exit_with_status_42.t — exit 42 exits with 42
+PASS  07_exit_with_status_42.t
+
+RUN   08_env_builtin.t — env builtin prints environment
+      note: Order is not guaranteed; stdout is compared sorted.
+PASS  08_env_builtin.t
+
+RUN   09_cd_root_then_pwd.t — cd builtin changes directory (cd / then pwd)
+PASS  09_cd_root_then_pwd.t
+
+RUN   10_setenv_then_env.t — setenv sets variable (FOOBAR)
+      note: Assert behavior: after setenv, FOOBAR must be readable via printenv (no pipes).
+PASS  10_setenv_then_env.t
+
+RUN   11_unsetenv_then_env.t — unsetenv removes variable (FOOBAR)
+      note: Assert behavior: after unsetenv, printenv should not output FOOBAR. We end with echo DONE and expect only DONE.
+PASS  11_unsetenv_then_env.t
+
+RUN   12_comment_ignored.t — comment-only line should do nothing
+      note: Even if comments aren't implemented, shell must not crash.
+PASS  12_comment_ignored.t
+
+RUN   13_ctrl_d_exit.t — EOF (ctrl-d) exits cleanly
+      note: Empty input simulates ctrl-d in non-interactive mode.
+PASS  13_ctrl_d_exit.t
+
+RUN   14_many_empty_lines.t — many empty lines should not crash
+PASS  14_many_empty_lines.t
+
+RUN   15_long_command_line.t — long command line should not crash
+      note: Stress test for input parsing; should behave like /bin/sh.
+PASS  15_long_command_line.t
+
+Summary
+────────────────────────────────────────────────────────
+TOTAL=15  PASS=15  FAIL=0  SKIP=1

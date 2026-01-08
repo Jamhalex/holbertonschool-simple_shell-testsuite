@@ -38,7 +38,8 @@ Example:
 bash
 Copy code
 HSH=/home/user/holbertonschool-simple_shell/hsh ./checker.bash
-Optional flags
+Optional flags:
+
 Verbose output (print stdout/stderr even on PASS):
 
 bash
@@ -73,7 +74,7 @@ Supported keys
 Key	Description
 name	Human-readable test name
 notes	Optional explanation
-input	Commands sent to stdin (\\n = newline)
+input	Commands sent to stdin (\n = newline)
 env	Environment configuration
 expect_status	Expected exit status
 expect_stdout	Expected stdout (optional)
@@ -85,8 +86,11 @@ default → inherit current environment
 
 KEY=VAL;KEY2=VAL2 → run with env -i and only these variables
 
-Startup noise is eliminated using ENV=/dev/null.
+Startup noise is eliminated using:
 
+text
+Copy code
+ENV=/dev/null
 Example test
 File: tests/11_pwd_builtin.t
 
@@ -105,7 +109,7 @@ Expects exit code 0
 
 Compares output against /bin/sh
 
-Order-independent output (env example)
+Order-independent output (example: env)
 Some commands (like env) do not guarantee output order.
 
 For those tests, add:
@@ -152,17 +156,4 @@ Important note on non-POSIX builtins
 /bin/sh does not implement these builtins, and doing a reference diff would yield incorrect failures.
 These tests therefore use explicit assertions on expected behavior.
 
-TL;DR
-This test suite provides deterministic and fair validation for the Simple Shell project.
-
-POSIX behavior is compared against /bin/sh
-
-Project-specific builtins (setenv, unsetenv) use explicit assertions
-
-STDERR is sanitized to avoid shell-name false negatives
-
-Environment noise is eliminated
-
-env output is sorted when order is undefined
-
-Designed for Holberton peer review and cohort-wide usage.
+Designed for deterministic validation, fair peer review, and deep understanding of the Simple Shell project.
