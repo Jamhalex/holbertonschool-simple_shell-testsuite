@@ -5,10 +5,7 @@ SUITE_DIR="$(cd "$(dirname "$0")" && pwd)"
 TESTS_DIR="$SUITE_DIR/tests"
 LIB_DIR="$SUITE_DIR/lib"
 
-# Target student shell binary (must be executable)
 HSH="${HSH:-./hsh}"
-
-# Reference shell binary (oracle). Holberton expects /bin/sh behavior.
 REF="${REF:-/bin/sh}"
 
 source "$LIB_DIR/common.sh"
@@ -73,6 +70,9 @@ if ! declare -F run_test >/dev/null 2>&1; then
 
     local tmp
     tmp="$(mktemp -d)"
+    # Always cleanup temp even if something explodes mid-test
+    trap 'rm -rf "$tmp"' RETURN
+
     local in_file="$tmp/in.txt"
     local out_r="$tmp/out_r"
     local err_r="$tmp/err_r"
@@ -81,16 +81,14 @@ if ! declare -F run_test >/dev/null 2>&1; then
     local st_r=0
     local st_h=0
 
-    # input is stored with \n escapes in .t files
     printf '%b' "$t_input" > "$in_file"
 
     # Build environment prefix
-    # - "default" => inherit
-    # - otherwise: env -i + envspec exports + kill startup noise
+    # - default => inherit
+    # - otherwise: env -i + envspec + kill startup noise + stabilize HOME/PWD
     local prefix=""
     if [[ -n "$t_env" && "$t_env" != "default" ]]; then
-      # envspec_to_exports is defined in common.sh
-      prefix="env -i $(envspec_to_exports "$t_env") ENV=/dev/null BASH_ENV=/dev/null "
+      prefix="env -i $(envspec_to_exports "$t_env") HOME=/tmp PWD=/tmp TERM=xterm ENV=/dev/null BASH_ENV=/dev/null "
     fi
 
     # Run reference
@@ -111,31 +109,25 @@ if ! declare -F run_test >/dev/null 2>&1; then
     if [[ -n "${t_expect_status:-}" ]]; then
       if [[ "$st_h" -ne "$t_expect_status" ]]; then
         echo "Exit status differs (expected=$t_expect_status got=$st_h)"
-        rm -rf "$tmp"
         return 1
       fi
     else
       if [[ "$st_h" -ne "$st_r" ]]; then
         echo "Exit status differs (ref=$st_r hsh=$st_h)"
-        rm -rf "$tmp"
         return 1
       fi
     fi
 
-    # Output expectations:
-    # - If expect_stdout/stderr are empty => compare to REF
-    # - If provided => compare to literal expected content
+    # Output expectations
     if [[ -n "${t_expect_stdout:-}" ]]; then
       local exp_out="$tmp/exp_out"
       printf '%b' "$t_expect_stdout" > "$exp_out"
       if ! diff_stdout "$exp_out" "$out_h"; then
         echo "STDOUT differs"
-        rm -rf "$tmp"
         return 1
       fi
     else
       if ! compare_out_err "$out_r" "$out_h" "$err_r" "$err_h"; then
-        rm -rf "$tmp"
         return 1
       fi
     fi
@@ -145,7 +137,6 @@ if ! declare -F run_test >/dev/null 2>&1; then
       printf '%b' "$t_expect_stderr" > "$exp_err"
       if ! diff_stderr "$exp_err" "$err_h"; then
         echo "STDERR differs"
-        rm -rf "$tmp"
         return 1
       fi
     fi
@@ -157,11 +148,9 @@ if ! declare -F run_test >/dev/null 2>&1; then
       echo "---- STDERR (hsh) ----"; cat "$err_h" || true
     fi
 
-    rm -rf "$tmp"
     return 0
   }
 fi
-
 # --------------------------------------------------------------------
 
 print_header
@@ -192,12 +181,10 @@ for tf in "${test_files[@]}"; do
   t_expect_stderr="$(t_get "$tf" expect_stderr)"
   t_notes="$(t_get "$tf" notes)"
 
-  # NEW: per-test stdout normalization toggle (for env, etc.)
   t_sort_stdout="$(t_get "$tf" sort_stdout)"
   [[ -z "$t_sort_stdout" ]] && t_sort_stdout="0"
   export SORT_STDOUT="$t_sort_stdout"
 
-  # defaults
   [[ -z "$t_name" ]] && t_name="$bn"
   [[ -z "$t_env" ]] && t_env="default"
 
