@@ -154,4 +154,9 @@ avoid false negatives
 
 be easy to extend and understand
 
+
+> ⚠️ **Important:** Tests for `setenv` and `unsetenv` do **not** compare against `/bin/sh`.  
+> `/bin/sh` does not implement these builtins, and doing a reference diff would yield **incorrect failures**.  
+> These tests therefore use **explicit assertions** on expected output.
+
 Designed for Holberton peer review and cohort usage.
