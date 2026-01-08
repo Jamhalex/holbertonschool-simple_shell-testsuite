@@ -1,0 +1,4 @@
+name=interactive prompt exists (skipped)
+notes=Interactive tests can hang automation; keep as .skip for manual runs.
+input=
+env=default

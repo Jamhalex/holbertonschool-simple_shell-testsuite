@@ -6,4 +6,3 @@ expect_status=0
 expect_stdout=
 expect_stderr=
 sort_stdout=1
-

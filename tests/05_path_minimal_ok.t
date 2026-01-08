@@ -1,6 +1,6 @@
-name=Non-interactive /bin/ls
+name=Minimal PATH resolves ls
 input=ls\nexit\n
-env=default
+env=PATH=/bin:/usr/bin
 expect_status=
 expect_stdout=
 expect_stderr=

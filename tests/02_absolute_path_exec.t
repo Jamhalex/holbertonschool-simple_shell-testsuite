@@ -1,5 +1,5 @@
-name=Non-interactive /bin/ls
-input=ls\nexit\n
+name=Absolute path command runs
+input=/bin/ls\nexit\n
 env=default
 expect_status=
 expect_stdout=

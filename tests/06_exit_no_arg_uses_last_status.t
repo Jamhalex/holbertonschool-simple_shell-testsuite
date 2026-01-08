@@ -1,5 +1,6 @@
 name=exit uses last command status
-input=/bin/ls /nope\nexit\n
+input=nosuchcommand\nexit\n
 env=default
-expect_status=2
-
+expect_status=127
+expect_stdout=
+expect_stderr=
